@@ -3,5 +3,12 @@
     Home
   </h1>
 
-  <button mat-raised-button color="primary" routerLink="/detail">Go to Detail</button>
+  <mat-form-field appearance="legacy">
+    <mat-label>Tease URL</mat-label>
+    <input matInput placeholder="Tease URL" [(ngModel)]="url">
+  </mat-form-field>
+
+  <p>
+    URL: {{jsonUrl}}
+  </p>
 </div>
