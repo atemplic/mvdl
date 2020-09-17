@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button'
 
 import { DetailRoutingModule } from './detail-routing.module';
 
@@ -8,6 +9,6 @@ import { SharedModule } from '../shared/shared.module';
 
 @NgModule({
   declarations: [DetailComponent],
-  imports: [CommonModule, SharedModule, DetailRoutingModule]
+  imports: [MatButtonModule, CommonModule, SharedModule, DetailRoutingModule]
 })
-export class DetailModule {}
+export class DetailModule { }
