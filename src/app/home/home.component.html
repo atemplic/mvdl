@@ -7,8 +7,9 @@
     <mat-label>Tease URL</mat-label>
     <input matInput placeholder="Tease URL" [(ngModel)]="url">
   </mat-form-field>
+  <button mat-raised-button color="primary" (click)="loadTease()">Load</button>
 
   <p>
-    URL: {{jsonUrl}}
+    URL: {{teaseInfo}}
   </p>
 </div>

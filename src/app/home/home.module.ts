@@ -11,6 +11,6 @@ import { MatInputModule } from '@angular/material/input';
 
 @NgModule({
   declarations: [HomeComponent],
-  imports: [CommonModule, SharedModule, HomeRoutingModule, MatButtonModule, MatFormFieldModule, MatInputModule]
+  imports: [CommonModule, SharedModule, HomeRoutingModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatButtonModule]
 })
 export class HomeModule { }

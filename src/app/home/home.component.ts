@@ -12,19 +12,10 @@ export class HomeComponent implements OnInit {
 
   private readonly ipcRenderer: IpcRenderer;
 
-  internalUrl: string = 'https://milovana.com/webteases/showtease.php?id=40253';
-  jsonUrl: string | undefined = "init";
+  url: string = 'https://milovana.com/webteases/showtease.php?id=40253';
+  teaseInfo: string | undefined = "i";
 
-  get url(): string {
-    return this.internalUrl;
-  }
-
-  set url(newUrl: string) {
-    this.internalUrl = newUrl;
-    this.updateJsonUrl();
-  }
-
-  updateJsonUrl() {
+  loadTease() {
     this.ipcRenderer.send('load-tease', this.parseTeaseId(this.url));
   }
 
@@ -41,10 +32,9 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.ipcRenderer.on('tease-loaded', (event, jsonUrl) => {
-      this.ngZone.run(() => this.jsonUrl = jsonUrl);
+    this.ipcRenderer.on('tease-loaded', (event, teaseInfo) => {
+      this.ngZone.run(() => this.teaseInfo = teaseInfo);
     });
-    this.updateJsonUrl();
   }
 
 }

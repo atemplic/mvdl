@@ -59,7 +59,7 @@ function downloadTeaseToFile(url: string) {
 }
 
 async function downloadTease(url: string) {
-  return axios.get(url).then(response => '' + JSON.stringify(response));
+  return axios.get(url).then(response => response.statusText);
 }
 
 function setupIpc() {
