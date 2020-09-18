@@ -1,12 +1,16 @@
-import { app, BrowserWindow, screen } from 'electron';
+import { app, BrowserWindow, ipcMain, screen } from 'electron';
+import axios, { AxiosResponse } from 'axios';
 import * as path from 'path';
 import * as url from 'url';
+
+const electronDl = require('electron-dl');
 
 let win: BrowserWindow = null;
 const args = process.argv.slice(1),
   serve = args.some(val => val === '--serve');
 
 function createWindow(): BrowserWindow {
+  console.log('asdf');
 
   const electronScreen = screen;
   const size = electronScreen.getPrimaryDisplay().workAreaSize;
@@ -50,12 +54,32 @@ function createWindow(): BrowserWindow {
   return win;
 }
 
+function downloadTeaseToFile(url: string) {
+  electronDl.download(win, url);
+}
+
+async function downloadTease(url: string) {
+  return axios.get(url).then(response => '' + JSON.stringify(response));
+}
+
+function setupIpc() {
+  console.log('test');
+  ipcMain.on('load-tease', async (event, teaseId) => {
+    const jsonUrl = `https://milovana.com/webteases/geteosscript.php?id=${teaseId}`;
+    let script = await downloadTease(jsonUrl);
+    event.reply('tease-loaded', script);
+  });
+}
+
 try {
   // This method will be called when Electron has finished
   // initialization and is ready to create browser windows.
   // Some APIs can only be used after this event occurs.
   // Added 400 ms to fix the black background issue while using transparent window. More detais at https://github.com/electron/electron/issues/15947
-  app.on('ready', () => setTimeout(createWindow, 400));
+  app.on('ready', () => setTimeout(() => {
+    setupIpc();
+    createWindow();
+  }, 400));
 
   // Quit when all windows are closed.
   app.on('window-all-closed', () => {

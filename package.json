@@ -42,15 +42,14 @@
     "lint": "ng lint"
   },
   "devDependencies": {
-    "@angular/animations": "^10.0.0 || ^11.0.0-0",
-    "@angular/cdk": "10.2.1",
-    "@angular/material": "10.2.1",
     "@angular-builders/custom-webpack": "9.2.0",
     "@angular-devkit/build-angular": "0.1000.8",
     "@angular-eslint/builder": "0.2.0-beta.1",
     "@angular-eslint/eslint-plugin": "0.2.0-beta.1",
     "@angular-eslint/eslint-plugin-template": "0.2.0-beta.1",
     "@angular-eslint/template-parser": "0.2.0-beta.1",
+    "@angular/animations": "^10.0.0 || ^11.0.0-0",
+    "@angular/cdk": "10.2.1",
     "@angular/cli": "10.0.8",
     "@angular/common": "10.0.14",
     "@angular/compiler": "10.0.14",
@@ -58,6 +57,7 @@
     "@angular/core": "10.0.14",
     "@angular/forms": "10.0.14",
     "@angular/language-service": "10.0.14",
+    "@angular/material": "10.2.1",
     "@angular/platform-browser": "10.0.14",
     "@angular/platform-browser-dynamic": "10.0.14",
     "@angular/router": "10.0.14",
@@ -70,12 +70,14 @@
     "@typescript-eslint/eslint-plugin": "3.10.1",
     "@typescript-eslint/eslint-plugin-tslint": "3.10.1",
     "@typescript-eslint/parser": "3.10.1",
+    "axios": "0.20.0",
     "chai": "4.2.0",
     "conventional-changelog-cli": "2.1.0",
     "core-js": "3.6.5",
     "cross-env": "7.0.2",
     "electron": "9.3.0",
     "electron-builder": "22.8.0",
+    "electron-dl": "3.0.2",
     "electron-reload": "1.5.0",
     "eslint": "7.7.0",
     "eslint-plugin-import": "2.22.0",
@@ -99,5 +101,6 @@
   },
   "engines": {
     "node": ">=10.13.0"
-  }
+  },
+  "dependencies": {}
 }
