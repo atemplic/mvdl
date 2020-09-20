@@ -1,7 +1,8 @@
 import { Component, OnInit, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import { ElectronService } from '../core/services/electron/electron.service';
-import { IpcRenderer } from 'electron';
+import { IpcRenderer, ipcMain } from 'electron';
+import { TeaseStatus } from '../../../tease-status'
 
 @Component({
   selector: 'app-home',
@@ -13,10 +14,22 @@ export class HomeComponent implements OnInit {
   private readonly ipcRenderer: IpcRenderer;
 
   url: string = 'https://milovana.com/webteases/showtease.php?id=40253';
-  teaseInfo: string | undefined = "i";
+  status: TeaseStatus = {};
+  outputDir = '';
+
+  get imagesDownloaded(): number {
+    if (this.status.script?.images) {
+      return this.status.script.images.filter(i => i.downloaded).length;
+    }
+    return 0;
+  }
 
   loadTease() {
     this.ipcRenderer.send('load-tease', this.parseTeaseId(this.url));
+  }
+
+  selectOutput() {
+    this.ipcRenderer.send('select-output');
   }
 
   parseTeaseId(teaseUrl: string): string | null {
@@ -32,9 +45,13 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.ipcRenderer.on('tease-loaded', (event, teaseInfo) => {
-      this.ngZone.run(() => this.teaseInfo = teaseInfo);
+    this.ipcRenderer.on('tease-loaded', (event, status: TeaseStatus) => {
+      this.ngZone.run(() => this.status = status);
     });
+
+    this.ipcRenderer.on('output-selected', (event, outputPath: string) => {
+      this.ngZone.run(() => this.outputDir = outputPath);
+    })
   }
 
 }

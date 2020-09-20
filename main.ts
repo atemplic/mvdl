@@ -1,18 +1,20 @@
-import { app, BrowserWindow, ipcMain, screen } from 'electron';
+import { app, BrowserWindow, ipcMain, screen, dialog } from 'electron';
 import axios, { AxiosResponse } from 'axios';
 import * as cheerio from 'cheerio';
 import * as path from 'path';
 import * as url from 'url';
+import { TeaseStatus, TeaseMetadata } from './tease-status';
+import { Downloader } from './downloader';
+import { promises as fs } from 'fs';
 
 const electronDl = require('electron-dl');
 
 let win: BrowserWindow = null;
 const args = process.argv.slice(1),
   serve = args.some(val => val === '--serve');
+let outputPath: string | undefined;
 
 function createWindow(): BrowserWindow {
-  console.log('asdf');
-
   const electronScreen = screen;
   const size = electronScreen.getPrimaryDisplay().workAreaSize;
 
@@ -59,27 +61,34 @@ function downloadTeaseToFile(url: string) {
   electronDl.download(win, url);
 }
 
-async function downloadTeaseInfo(teaseId: string) {
-  const url = `https://milovana.com/webteases/showtease.php?id=${teaseId}`;
-  const response = await axios.get(url, {
-    transformResponse: [],
-    responseType: 'text'
-  });
-  const doc = cheerio.load(response.data);
-  const title = doc('body').attr('data-title');
-  return title;
+async function setOutputPath(newPath: string) {
+  outputPath = newPath;
+  const appData = path.join(app.getPath('appData'), 'MVDL');
+  try {
+    await fs.access(appData);
+  } catch {
+    await fs.mkdir(appData);
+  }
+  fs.writeFile(path.join(appData, 'settings.json'), newPath);
 }
 
-async function downloadTease(teaseId: string) {
-  const url = `https://milovana.com/webteases/geteosscript.php?id=${teaseId}`;
-  return axios.get(url).then(response => response.statusText);
-}
 
 function setupIpc() {
-  console.log('test');
   ipcMain.on('load-tease', async (event, teaseId) => {
-    let teaseInfo = await downloadTeaseInfo(teaseId);
-    event.reply('tease-loaded', teaseInfo);
+    let downloader = new Downloader();
+    let status = await downloader.downloadTeaseInfo(teaseId);
+    event.reply('tease-loaded', status);
+
+    downloader.startImageDownloads(teaseId, (status) => event.reply('tease-loaded', status));
+  });
+
+  ipcMain.on('select-output', async (event) => {
+    const result = await dialog.showOpenDialog(win, {
+      properties: ['openDirectory'],
+    })
+    outputPath = result.filePaths.length == 1 ? result.filePaths[0] : null;
+    setOutputPath(outputPath);
+    event.reply('output-selected', outputPath);
   });
 }
 
