@@ -52,6 +52,8 @@ export class HomeComponent implements OnInit {
     this.ipcRenderer.on('output-selected', (event, outputPath: string) => {
       this.ngZone.run(() => this.outputDir = outputPath);
     })
+
+    this.ipcRenderer.send('view-output');
   }
 
 }

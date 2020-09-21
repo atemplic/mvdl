@@ -20,7 +20,7 @@
   </p>
 
   <p>
-    <mat-form-field appearance="legacy">
+    <mat-form-field appearance="legacy" (click)="selectOutput()">
       <mat-label>Output directory</mat-label>
       <input matInput disabled placeholder="Tease URL" [(ngModel)]="outputDir">
     </mat-form-field>

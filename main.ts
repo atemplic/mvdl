@@ -5,6 +5,7 @@ import * as path from 'path';
 import * as url from 'url';
 import { TeaseStatus, TeaseMetadata } from './tease-status';
 import { Downloader } from './downloader';
+import { Settings } from './settings';
 import { promises as fs } from 'fs';
 
 const electronDl = require('electron-dl');
@@ -12,9 +13,10 @@ const electronDl = require('electron-dl');
 let win: BrowserWindow = null;
 const args = process.argv.slice(1),
   serve = args.some(val => val === '--serve');
-let outputPath: string | undefined;
+let settings: Settings;
 
-function createWindow(): BrowserWindow {
+async function createWindow(): Promise<BrowserWindow> {
+  settings = await Settings.getInstance();
   const electronScreen = screen;
   const size = electronScreen.getPrimaryDisplay().workAreaSize;
 
@@ -61,18 +63,6 @@ function downloadTeaseToFile(url: string) {
   electronDl.download(win, url);
 }
 
-async function setOutputPath(newPath: string) {
-  outputPath = newPath;
-  const appData = path.join(app.getPath('appData'), 'MVDL');
-  try {
-    await fs.access(appData);
-  } catch {
-    await fs.mkdir(appData);
-  }
-  fs.writeFile(path.join(appData, 'settings.json'), newPath);
-}
-
-
 function setupIpc() {
   ipcMain.on('load-tease', async (event, teaseId) => {
     let downloader = new Downloader();
@@ -86,9 +76,15 @@ function setupIpc() {
     const result = await dialog.showOpenDialog(win, {
       properties: ['openDirectory'],
     })
-    outputPath = result.filePaths.length == 1 ? result.filePaths[0] : null;
-    setOutputPath(outputPath);
-    event.reply('output-selected', outputPath);
+    if (result.filePaths.length == 1) {
+      const outputPath = result.filePaths[0];
+      settings.setOutputPath(outputPath);
+      event.reply('output-selected', outputPath);
+    }
+  });
+
+  ipcMain.on('view-output', async (event) => {
+    event.reply('output-selected', settings.getOutputPath());
   });
 }
 
