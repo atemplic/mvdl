@@ -1,25 +1,11 @@
 {
-  "name": "angular-electron",
-  "version": "8.0.4",
-  "description": "Angular 10 with Electron (Typescript + SASS + Hot Reload)",
-  "homepage": "https://github.com/maximegris/angular-electron",
+  "name": "mvdl",
+  "version": "1.0.0",
+  "description": "Downloader for Milovana EOS teases.",
   "author": {
-    "name": "Maxime GRIS",
-    "email": "maxime.gris@gmail.com"
+    "name": "atemplic",
+    "email": "atemplic@gmail.com"
   },
-  "keywords": [
-    "angular",
-    "angular 10",
-    "electron",
-    "nodejs",
-    "typescript",
-    "spectron",
-    "eslint",
-    "sass",
-    "windows",
-    "mac",
-    "linux"
-  ],
   "main": "main.js",
   "private": true,
   "scripts": {
