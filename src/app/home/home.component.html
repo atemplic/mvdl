@@ -1,31 +1,31 @@
 <div class="container">
-  <h1>
-    Home
-  </h1>
-
-  <mat-form-field appearance="legacy">
-    <mat-label>Tease URL</mat-label>
-    <input matInput placeholder="Tease URL" [(ngModel)]="url">
-  </mat-form-field>
-  <button mat-raised-button color="primary" (click)="loadTease()">Load</button>
-
-  <p *ngIf="status?.metadata?.title">
-    Title: {{status.metadata.title}}
-  </p>
-  <p *ngIf="status?.metadata?.author">
-    Author: {{status.metadata.author}}
-  </p>
-  <p *ngIf="status?.script?.images">
-    Images: {{imagesDownloaded}} / {{status.script.images.length}}
-  </p>
-
   <p>
     <mat-form-field appearance="legacy" (click)="selectOutput()">
       <mat-label>Output directory</mat-label>
       <input matInput disabled placeholder="Tease URL" [(ngModel)]="outputDir">
     </mat-form-field>
-    <button mat-raised-button color="primary" (click)="selectOutput()">Load</button>
+    <button mat-raised-button color="primary" (click)="selectOutput()">Select</button>
   </p>
+  <p>
+    <mat-form-field appearance="legacy">
+      <mat-label>Tease URL</mat-label>
+      <input matInput placeholder="Tease URL" [(ngModel)]="url">
+    </mat-form-field>
+    <button mat-raised-button color="primary" (click)="loadTease()">Load</button>
+  </p>
+
+  <div *ngIf=status>
+    <p>
+      Title: {{status.metadata.title}}
+    </p>
+    <p>
+      Author: {{status.metadata.author}}
+    </p>
+    <p>
+      Images: {{status.downloadedFiles}} / {{status.totalFiles}}
+    </p>
+  </div>
+
 
 
 </div>

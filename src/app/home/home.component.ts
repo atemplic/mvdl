@@ -14,15 +14,8 @@ export class HomeComponent implements OnInit {
   private readonly ipcRenderer: IpcRenderer;
 
   url: string = 'https://milovana.com/webteases/showtease.php?id=40253';
-  status: TeaseStatus = {};
+  status?: TeaseStatus = null;
   outputDir = '';
-
-  get imagesDownloaded(): number {
-    if (this.status.script?.images) {
-      return this.status.script.images.filter(i => i.downloaded).length;
-    }
-    return 0;
-  }
 
   loadTease() {
     this.ipcRenderer.send('load-tease', this.parseTeaseId(this.url));
@@ -45,7 +38,7 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.ipcRenderer.on('tease-loaded', (event, status: TeaseStatus) => {
+    this.ipcRenderer.on('update-status', (event, status: TeaseStatus) => {
       this.ngZone.run(() => this.status = status);
     });
 

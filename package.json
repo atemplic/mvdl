@@ -68,12 +68,11 @@
     "@types/jasminewd2": "2.0.8",
     "@types/mocha": "8.0.3",
     "@types/node": "12.12.6",
+    "@types/sanitize-filename": "1.6.3",
     "@typescript-eslint/eslint-plugin": "3.10.1",
     "@typescript-eslint/eslint-plugin-tslint": "3.10.1",
     "@typescript-eslint/parser": "3.10.1",
-    "axios": "0.20.0",
     "chai": "4.2.0",
-    "cheerio": "1.0.0-rc.3",
     "conventional-changelog-cli": "2.1.0",
     "core-js": "3.6.5",
     "cross-env": "7.0.2",
@@ -104,5 +103,10 @@
   "engines": {
     "node": ">=10.13.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "axios": "0.20.0",
+    "bottleneck": "2.19.5",
+    "cheerio": "1.0.0-rc.3",
+    "sanitize-filename": "1.6.3"
+  }
 }

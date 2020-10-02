@@ -1,22 +1,16 @@
 import { app, BrowserWindow, ipcMain, screen, dialog } from 'electron';
-import axios, { AxiosResponse } from 'axios';
-import * as cheerio from 'cheerio';
 import * as path from 'path';
 import * as url from 'url';
-import { TeaseStatus, TeaseMetadata } from './tease-status';
-import { Downloader } from './downloader';
+import { Tease } from './tease';
 import { Settings } from './settings';
-import { promises as fs } from 'fs';
-
-const electronDl = require('electron-dl');
 
 let win: BrowserWindow = null;
 const args = process.argv.slice(1),
   serve = args.some(val => val === '--serve');
 let settings: Settings;
+let tease: Tease;
 
 async function createWindow(): Promise<BrowserWindow> {
-  settings = await Settings.getInstance();
   const electronScreen = screen;
   const size = electronScreen.getPrimaryDisplay().workAreaSize;
 
@@ -59,17 +53,18 @@ async function createWindow(): Promise<BrowserWindow> {
   return win;
 }
 
-function downloadTeaseToFile(url: string) {
-  electronDl.download(win, url);
+async function initialize(): Promise<void> {
+  settings = await Settings.getInstance();
+  setupIpc();
 }
 
 function setupIpc() {
   ipcMain.on('load-tease', async (event, teaseId) => {
-    let downloader = new Downloader();
-    let status = await downloader.downloadTeaseInfo(teaseId);
-    event.reply('tease-loaded', status);
+    tease = new Tease(settings.getOutputPath(), teaseId);
+    await tease.downloadTeaseInfo();
+    event.reply('update-status', tease.getStatus());
 
-    downloader.startImageDownloads(teaseId, (status) => event.reply('tease-loaded', status));
+    tease.startImageDownloads((status) => event.reply('update-status', status));
   });
 
   ipcMain.on('select-output', async (event) => {
@@ -94,7 +89,7 @@ try {
   // Some APIs can only be used after this event occurs.
   // Added 400 ms to fix the black background issue while using transparent window. More detais at https://github.com/electron/electron/issues/15947
   app.on('ready', () => setTimeout(() => {
-    setupIpc();
+    initialize();
     createWindow();
   }, 400));
 
