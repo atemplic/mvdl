@@ -19,9 +19,11 @@ export interface Image extends File {
 }
 
 export class Tease {
+  public initialized = false;
   private metadata: TeaseMetadata;
   private scriptText: string;
   private images: Image[] = [];
+  private errors: string[] = [];
   private limiter = new Bottleneck({
     minTime: 500,
     maxConcurrent: 1,
@@ -29,27 +31,36 @@ export class Tease {
 
   private async downloadMetadata(): Promise<void> {
     const url = `https://milovana.com/webteases/showtease.php?id=${this.teaseId}`;
-    const response = await axios.get(url, {
-      transformResponse: [],
-      responseType: 'text'
-    });
-    const doc = cheerio.load(response.data);
-    this.metadata = {
-      id: doc('body').attr('data-tease-id'),
-      authorId: doc('body').attr('data-author-id'),
-      title: doc('body').attr('data-title'),
-      author: doc('body').attr('data-author'),
-    };
+    try {
+      const response = await axios.get(url, {
+        transformResponse: [],
+        responseType: 'text'
+      });
+      const doc = cheerio.load(response.data);
+      this.metadata = {
+        id: doc('body').attr('data-tease-id'),
+        authorId: doc('body').attr('data-author-id'),
+        title: doc('body').attr('data-title'),
+        author: doc('body').attr('data-author'),
+      };
+    } catch (e) {
+      this.errors.push(`Error loading ${url}`);
+    }
   }
 
   private async downloadScript(): Promise<void> {
     const url = `https://milovana.com/webteases/geteosscript.php?id=${this.teaseId}`;
-    const response = await axios.get(url, {
-      transformResponse: [],
-      responseType: 'text'
-    });
+    try {
+      const response = await axios.get(url, {
+        transformResponse: [],
+        responseType: 'text'
+      });
 
-    this.scriptText = response.data;
+      this.scriptText = response.data;
+    } catch (e) {
+      this.errors.push(`Error loading ${url}`);
+    }
+
   }
 
   private parseFiles() {
@@ -98,8 +109,11 @@ export class Tease {
   async downloadTeaseInfo(): Promise<void> {
     await this.downloadMetadata();
     await this.downloadScript();
-    this.parseFiles();
-    await this.saveTeaseInfo();
+    if (this.errors.length == 0) {
+      this.parseFiles();
+      await this.saveTeaseInfo();
+      this.initialized = true;
+    }
   }
 
   async saveTeaseInfo(): Promise<void> {
@@ -128,7 +142,7 @@ export class Tease {
       metadata: this.metadata,
       totalFiles: this.images.length,
       downloadedFiles: this.images.filter(i => i.downloaded).length,
-      errors: [],
+      errors: this.errors,
     };
 
   }
@@ -146,25 +160,31 @@ export class Tease {
         console.log(url);
         console.log(imagePath);
 
-        const writer = createWriteStream(imagePath);
-        const response = await axios.get(url, {
-          method: 'get',
-          responseType: 'stream',
-        });
-        response.data.pipe(writer);
-        let error = null;
-        writer.on('error', err => {
-          error = err;
-          writer.close();
-          console.log(err);
-          fs.unlink(imagePath);
-        });
-        writer.on('close', () => {
-          if (!error) {
-            image.downloaded = true;
-            listener(this.getStatus());
-          }
-        });
+        try {
+          const response = await axios.get(url, {
+            method: 'get',
+            responseType: 'stream',
+          });
+          const writer = createWriteStream(imagePath);
+          response.data.pipe(writer);
+          let error = null;
+          writer.on('error', err => {
+            error = err;
+            writer.close();
+            console.log(err);
+            fs.unlink(imagePath);
+          });
+          writer.on('close', () => {
+            if (!error) {
+              image.downloaded = true;
+              listener(this.getStatus());
+            }
+          });
+
+        } catch (e) {
+          this.errors.push(`Error downloading ${url}`)
+          listener(this.getStatus());
+        }
       });
     }
   }

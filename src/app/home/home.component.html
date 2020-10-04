@@ -1,30 +1,42 @@
 <div class="container">
-  <p>
-    <mat-form-field appearance="legacy" (click)="selectOutput()">
-      <mat-label>Output directory</mat-label>
-      <input matInput disabled placeholder="Tease URL" [(ngModel)]="outputDir">
-    </mat-form-field>
-    <button mat-raised-button color="primary" (click)="selectOutput()">Select</button>
-  </p>
-  <p>
-    <mat-form-field appearance="legacy">
-      <mat-label>Tease URL</mat-label>
-      <input matInput placeholder="Tease URL" [(ngModel)]="url">
-    </mat-form-field>
-    <button mat-raised-button color="primary" (click)="loadTease()">Load</button>
-  </p>
+  <mat-card>
+    <div class="form-container">
+      <mat-form-field appearance="legacy" (click)="selectOutput()">
+        <mat-label>Output directory</mat-label>
+        <input matInput disabled placeholder="Tease URL" [(ngModel)]="outputDir">
+      </mat-form-field>
+      <button mat-raised-button color="primary" (click)="selectOutput()">Select</button>
+    </div>
+  </mat-card>
 
-  <div *ngIf=status>
-    <p>
-      Title: {{status.metadata.title}}
-    </p>
-    <p>
-      Author: {{status.metadata.author}}
-    </p>
-    <p>
-      Images: {{status.downloadedFiles}} / {{status.totalFiles}}
-    </p>
-  </div>
+  <mat-card>
+    <div class="form-container">
+      <mat-form-field appearance="legacy">
+        <mat-label>Tease URL</mat-label>
+        <input matInput placeholder="Tease URL" [(ngModel)]="url">
+      </mat-form-field>
+      <button mat-raised-button color="primary" (click)="loadTease()">Load</button>
+    </div>
+
+    <div *ngIf="status?.metadata" class="metadata">
+      <p>
+        Title: {{status.metadata?.title}}
+      </p>
+      <p>
+        Author: {{status.metadata?.author}}
+      </p>
+      <p>
+        Images: {{status.downloadedFiles}} / {{status.totalFiles}}
+      </p>
+
+    </div>
+    <div *ngIf="status?.errors?.length > 0" class="errors">
+      <p *ngFor="let error of status.errors">
+        {{error}}
+      </p>
+    </div>
+
+  </mat-card>
 
 
 

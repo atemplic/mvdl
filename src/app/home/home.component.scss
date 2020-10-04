@@ -1,9 +1,46 @@
+@import '~@angular/material/theming';
+
+// This should use the actual value from the current theme but jfc Angular theming is confusing and poorly documented.
+$warn: mat-palette($mat-red, 600);
+
 :host {
+
+  .form-container {
+    display:flex;
+    align-items: baseline;
+    margin: 0 16px;
+  }
+
   .mat-form-field {
-    width: 400px;
+    flex: 1;
   }
 
   button {
     margin-left: 20px;
+  }
+
+  .mat-card {
+    margin-bottom: 20px;
+    padding: 16px 0;
+  }
+
+  .metadata {
+    padding: 16px;
+    
+    p:last-child {
+      margin-bottom: 0;
+    }
+  }
+  
+  .errors {
+    background-color: #383838;
+    max-height: 150px;
+    overflow-y: scroll;
+    padding: 16px;
+    color: mat-color($warn);
+
+    p:last-child {
+      margin-bottom: 0;
+    }
   }
 }

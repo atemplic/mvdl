@@ -16,8 +16,8 @@ async function createWindow(): Promise<BrowserWindow> {
 
   // Create the browser window.
   win = new BrowserWindow({
-    width: 1024,
-    height: 768,
+    width: 800,
+    height: 600,
     webPreferences: {
       nodeIntegration: true,
       allowRunningInsecureContent: (serve) ? true : false,
@@ -64,7 +64,9 @@ function setupIpc() {
     await tease.downloadTeaseInfo();
     event.reply('update-status', tease.getStatus());
 
-    tease.startImageDownloads((status) => event.reply('update-status', status));
+    if (tease.initialized) {
+      tease.startImageDownloads((status) => event.reply('update-status', status));
+    }
   });
 
   ipcMain.on('select-output', async (event) => {
