@@ -13,7 +13,7 @@ export class HomeComponent implements OnInit {
 
   private readonly ipcRenderer: IpcRenderer;
 
-  url: string = 'https://milovana.com/webteases/showtease.php?id=40253';
+  url: string = '';
   status?: TeaseStatus = null;
   outputDir = '';
 
